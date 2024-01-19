@@ -11,19 +11,27 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
-  pages:{signIn:"/auth/login",
-  error:"/auth/error"},
-  
-  events:{
-   async linkAccount({user}){
+  pages: { signIn: "/auth/login", error: "/auth/error" },
+
+  events: {
+    async linkAccount({ user }) {
       await db.user.update({
-        where:{id:user.id},
-        data:{emailVerified:new Date()}
-      })
-    }
+        where: { id: user.id },
+        data: { emailVerified: new Date() },
+      });
+    },
   },
   callbacks: {
- 
+    async signIn({ user, account }) {
+      if (account?.provider !== "credentials") return true;
+
+      const existingUser = await getUserById(user.id);
+
+      if (!existingUser?.emailVerified) return false;
+
+      return true;
+    },
+
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;

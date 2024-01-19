@@ -5,7 +5,8 @@ import { db } from "@/lib/db";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { RegisterSchema } from "@/schemas";
 import { getUserByEmail } from "@/data/user";
-
+import { generateVerifcationToken } from "@/lib/tokens";
+import { sendVerificationEmail } from "@/lib/mail";
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const validatedFields = RegisterSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -27,6 +28,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
       password: hashedPassword,
     },
   });
-
-  return { success: "User succcesfully created!" };
+  const verificationToken = await generateVerifcationToken(email);
+  await sendVerificationEmail(verificationToken.email, verificationToken.token);
+  return { success: "Confirmation email sent!" };
 };
