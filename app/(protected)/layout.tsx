@@ -1,4 +1,4 @@
-import Navbar from "./_components/navbar";
+import Navbar from "./settings/_components/navbar";
 
 const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
   return (

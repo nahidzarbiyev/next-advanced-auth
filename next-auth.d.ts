@@ -1,7 +1,9 @@
 import { DefaultSession } from "next-auth";
 
 export type ExtendedUser = DefaultSession["user"] & {
-  role: UserRole
+  role: UserRole;
+  isTwoFactorEnabled: boolean;
+  isOAuth: boolean;
 };
 
 declare module "next-auth" {
@@ -9,5 +11,3 @@ declare module "next-auth" {
     user: ExtendedUser;
   }
 }
-
- 
